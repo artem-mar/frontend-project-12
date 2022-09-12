@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "third training project",
   "main": "index.js",
+  "engines": {
+    "node": "17.x"
+  },
   "scripts": {
     "build": "npm run build --prefix frontend",
     "start": "start-server -s ./frontend/build",
