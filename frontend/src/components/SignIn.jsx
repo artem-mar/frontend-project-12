@@ -1,8 +1,18 @@
 // import React, { useEffect, useState, useRef } from "react";
 import { useFormik } from 'formik';
-// import * as yup from 'yup';
+import * as yup from 'yup';
 import { Button, Form, FloatingLabel } from 'react-bootstrap';
 import signInImage from '../assets/sign_in.svg';
+
+yup.setLocale({
+  string: {
+    matches: 'password must contain numbers and letters',
+  },
+});
+const schema = yup.object().shape({
+  username: yup.string().required().min(3),
+  password: yup.string().required().min(6).matches(/^(?=.*[a-zA-Z])(?=.*[0-9])(?!.*[^\w\s])/),
+});
 
 const SignIn = () => {
   const formik = useFormik({
@@ -10,6 +20,7 @@ const SignIn = () => {
       username: '',
       password: '',
     },
+    validationSchema: schema,
     onSubmit: (value) => {
       console.log(value);
     },
@@ -25,14 +36,23 @@ const SignIn = () => {
                 <img src={signInImage} alt="Sign In" style={{ height: '200px' }} />
               </div>
               <div className="col-12 col-md-6">
-                <Form onSubmit={formik.handleSubmit} className="mt-3">
+                <Form noValidate onSubmit={formik.handleSubmit} className="mt-3">
                   <h1 className="text-center mb-4">Войти</h1>
                   <FloatingLabel
                     controlId="username"
                     label="Ваш ник"
                     className="mb-3"
                   >
-                    <Form.Control required onChange={formik.handleChange} type="text" placeholder="Ваш ник" />
+                    <Form.Control
+                      required
+                      onChange={formik.handleChange}
+                      isInvalid={!!formik.errors.username}
+                      type="text"
+                      placeholder="Ваш ник"
+                    />
+                    <Form.Control.Feedback type="invalid" tooltip>
+                      {formik.errors.username}
+                    </Form.Control.Feedback>
                   </FloatingLabel>
 
                   <FloatingLabel
@@ -40,7 +60,16 @@ const SignIn = () => {
                     label="Пароль"
                     className="mb-4"
                   >
-                    <Form.Control required onChange={formik.handleChange} type="text" placeholder="Пароль" />
+                    <Form.Control
+                      required
+                      onChange={formik.handleChange}
+                      isInvalid={!!formik.errors.password}
+                      type="text"
+                      placeholder="Пароль"
+                    />
+                    <Form.Control.Feedback type="invalid" tooltip>
+                      {formik.errors.password}
+                    </Form.Control.Feedback>
                   </FloatingLabel>
 
                   <Button variant="outline-primary" type="submit" className="w-100 mb-3">
