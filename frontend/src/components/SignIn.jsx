@@ -1,8 +1,12 @@
-// import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from 'react';
 import { useFormik } from 'formik';
+import axios from 'axios';
 import * as yup from 'yup';
+import { /* useLocation, */ useNavigate } from 'react-router-dom';
 import { Button, Form, FloatingLabel } from 'react-bootstrap';
+import useAuth from '../hooks/useAuth.jsx';
 import signInImage from '../assets/sign_in.svg';
+import routes from '../routes.js';
 
 yup.setLocale({
   string: {
@@ -11,18 +15,38 @@ yup.setLocale({
 });
 const schema = yup.object().shape({
   username: yup.string().required().min(3),
-  password: yup.string().required().min(6).matches(/^(?=.*[a-zA-Z])(?=.*[0-9])(?!.*[^\w\s])/),
+  password: yup.string().required().min(4),
+  // password: yup.string().required().min(6).matches(/^(?=.*[a-zA-Z])(?=.*[0-9])(?!.*[^\w\s])/),
 });
 
 const SignIn = () => {
+  const [authFailed, setAuthFailed] = useState(false);
+  const auth = useAuth();
+  const navigate = useNavigate();
+  // const location = useLocation();
+  const inputRef = useRef(null);
+  useEffect(() => {
+    inputRef.current.focus();
+  }, []);
+
   const formik = useFormik({
     initialValues: {
       username: '',
       password: '',
     },
     validationSchema: schema,
-    onSubmit: (value) => {
-      console.log(value);
+    onSubmit: async (values) => {
+      try {
+        const { data } = await axios.post(routes.loginPath(), values);
+        localStorage.setItem('user', JSON.stringify(data));
+        setAuthFailed(false);
+        auth.logIn();
+        navigate('/');
+      } catch (e) {
+        setAuthFailed(true);
+        inputRef.current.select();
+        console.log(e);
+      }
     },
   });
 
@@ -44,9 +68,10 @@ const SignIn = () => {
                     className="mb-3"
                   >
                     <Form.Control
+                      ref={inputRef}
                       required
                       onChange={formik.handleChange}
-                      isInvalid={!!formik.errors.username}
+                      isInvalid={!!formik.errors.username || authFailed}
                       type="text"
                       placeholder="Ваш ник"
                     />
@@ -63,12 +88,12 @@ const SignIn = () => {
                     <Form.Control
                       required
                       onChange={formik.handleChange}
-                      isInvalid={!!formik.errors.password}
+                      isInvalid={!!formik.errors.password || authFailed}
                       type="text"
                       placeholder="Пароль"
                     />
                     <Form.Control.Feedback type="invalid" tooltip>
-                      {formik.errors.password}
+                      {formik.errors.password || 'the username or password is incorrect'}
                     </Form.Control.Feedback>
                   </FloatingLabel>
 
