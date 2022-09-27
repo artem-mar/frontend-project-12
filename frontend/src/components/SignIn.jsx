@@ -4,7 +4,7 @@ import axios from 'axios';
 import * as yup from 'yup';
 import { /* useLocation, */ useNavigate } from 'react-router-dom';
 import { Button, Form, FloatingLabel } from 'react-bootstrap';
-import useAuth from '../hooks/useAuth.jsx';
+import { useAuth } from '../hooks/index.js';
 import signInImage from '../assets/sign_in.svg';
 import routes from '../routes.js';
 
@@ -45,7 +45,6 @@ const SignIn = () => {
       } catch (e) {
         setAuthFailed(true);
         inputRef.current.select();
-        console.log(e);
       }
     },
   });
@@ -89,7 +88,7 @@ const SignIn = () => {
                       required
                       onChange={formik.handleChange}
                       isInvalid={!!formik.errors.password || authFailed}
-                      type="text"
+                      type="password"
                       placeholder="Пароль"
                     />
                     <Form.Control.Feedback type="invalid" tooltip>
