@@ -1,6 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
-import channelsReducer from './channelsSlice.js';
-import messagesReducer from './messagesSlice.js';
+import channelsReducer, { actions as channelsActions } from './channelsSlice.js';
+import messagesReducer, { actions as messagesActions } from './messagesSlice.js';
+
+export const actions = {
+  ...channelsActions,
+  ...messagesActions,
+};
 
 export default configureStore({
   reducer: {
