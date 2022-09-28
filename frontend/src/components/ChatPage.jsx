@@ -23,7 +23,7 @@ const ChatPage = () => {
   return (
     <div className="container h-100 my-3 overflow-hidden shadow rounded p-0">
       <div className="d-flex flex-row h-100">
-        <div className="col-4 col-md-2 pt-4 border-end">
+        <div className="col-4 col-md-2 p-2 pt-5 border-end">
           <Channels />
         </div>
         <div className="col h-100 p-0">
