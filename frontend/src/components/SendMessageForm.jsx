@@ -1,5 +1,7 @@
 import React, { useRef, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import { Form, InputGroup, Button } from 'react-bootstrap';
+import { thunks } from '../slices/index.js';
 import { useApi } from '../hooks/index.js';
 
 const sendImg = (
@@ -10,12 +12,12 @@ const sendImg = (
 
 const SendMessageForm = ({ channelId }) => {
   const chatInput = useRef(null);
+  const dispatch = useDispatch();
+  const api = useApi();
 
   useEffect(() => {
     chatInput.current.focus();
   });
-
-  const socket = useApi();
 
   const submitMessage = async (e) => {
     e.preventDefault();
@@ -25,7 +27,7 @@ const SendMessageForm = ({ channelId }) => {
       body, username, channelId,
     };
 
-    socket.newMessage(message);
+    dispatch(thunks.sendMessage({ message, api }));
     chatInput.current.value = '';
     chatInput.current.focus();
   };
