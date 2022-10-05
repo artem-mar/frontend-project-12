@@ -45,9 +45,23 @@ const App = () => {
   socket.on('newMessage', (m) => {
     dispatch(actions.addMessage(m));
   });
+  socket.on('newChannel', (ch) => {
+    dispatch(actions.addChannel(ch));
+    dispatch(actions.setCurrentChannel(ch.id));
+  });
+  socket.on('removeChannel', ({ id }) => {
+    dispatch(actions.removeChannel(id));
+    dispatch(actions.setCurrentChannel(1));
+  });
+  socket.on('renameChannel', (ch) => {
+    dispatch(actions.updateChannel({ id: ch.id, changes: { name: ch.name } }));
+  });
 
   const api = useMemo(() => ({
-    newMessage: (message) => socket.emit('newMessage', message),
+    sendMessage: (message) => socket.emit('newMessage', message),
+    renameChannel: (data) => socket.emit('renameChannel', data), // data = { id, name }
+    addChannel: (name) => socket.emit('newChannel', { name }),
+    removeChannel: (id) => socket.emit('removeChannel', { id }),
   }), [socket]);
 
   return (
