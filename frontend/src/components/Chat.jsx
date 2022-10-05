@@ -32,7 +32,7 @@ const Chat = () => {
       <div className="px-5 overflow-auto">
         <ul ref={messagesList} className="p-0">
           {messages.map((m) => (
-            <li className="list-group-item" key={m.id}>
+            <li className="list-group-item text-break" key={m.id}>
               <b>{m.username}</b>
               {': '}
               {m.body}
