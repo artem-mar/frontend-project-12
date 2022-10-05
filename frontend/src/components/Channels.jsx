@@ -1,7 +1,8 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { selectors } from '../slices/channelsSlice.js';
 import Channel from './Channel.jsx';
+import { actions } from '../slices/index.js';
 
 const plusButtonImg = (
   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-plus-square-fill" viewBox="0 0 16 16">
@@ -10,13 +11,17 @@ const plusButtonImg = (
 );
 
 const Channels = () => {
+  const dispatch = useDispatch();
   const channels = useSelector(selectors.selectAll);
+  const handleOpen = () => {
+    dispatch(actions.openModal({ type: 'addChannel' }));
+  };
 
   return (
     <>
       <div className="d-flex justify-content-between ps-2">
         <span>Каналы</span>
-        <button type="button" className="btn p-0">
+        <button onClick={handleOpen} type="button" className="btn p-0">
           {plusButtonImg}
         </button>
       </div>
