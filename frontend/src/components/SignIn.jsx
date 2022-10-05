@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useFormik } from 'formik';
 import axios from 'axios';
 import * as yup from 'yup';
-import { /* useLocation, */ useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Button, Form, FloatingLabel } from 'react-bootstrap';
 import { useAuth } from '../hooks/index.js';
 import signInImage from '../assets/sign_in.svg';
@@ -23,7 +23,6 @@ const SignIn = () => {
   const [authFailed, setAuthFailed] = useState(false);
   const auth = useAuth();
   const navigate = useNavigate();
-  // const location = useLocation();
   const inputRef = useRef(null);
   useEffect(() => {
     inputRef.current.focus();
