@@ -17,7 +17,7 @@ const AuthProvider = ({ children }) => {
   const hasToken = Object.hasOwn(localStorage, 'user');
   const [loggedIn, setLoggedIn] = useState(hasToken);
 
-  const { username } = JSON.parse(localStorage.user);
+  const user = JSON.parse(localStorage.getItem('user'));
   const logIn = () => setLoggedIn(true);
   const logOut = () => {
     localStorage.removeItem('user');
@@ -26,8 +26,8 @@ const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={useMemo(() => ({
-      loggedIn, logIn, logOut, username,
-    }), [loggedIn, username])}
+      loggedIn, logIn, logOut, user,
+    }), [loggedIn, user])}
     >
       {children}
     </AuthContext.Provider>

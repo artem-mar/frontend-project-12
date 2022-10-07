@@ -16,7 +16,7 @@ const SendMessageForm = ({ channelId }) => {
   const chatInput = useRef(null);
   const dispatch = useDispatch();
   const api = useApi();
-  const { username } = useAuth();
+  const { user: { username } } = useAuth();
 
   useEffect(() => {
     chatInput.current.focus();
