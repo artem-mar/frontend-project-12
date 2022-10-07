@@ -9,7 +9,7 @@ import { useApi } from '../hooks/index.js';
 
 const getSchema = (channelsNames) => yup.object().shape({
   name: yup.string().required().trim().min(3)
-    .max(10)
+    .max(20)
     .notOneOf(channelsNames),
 });
 
@@ -23,9 +23,10 @@ const AddChannelModal = ({ handleClose }) => {
       name: '',
     },
     validationSchema: getSchema(channelsNames),
-    onSubmit: ({ name }) => {
-      dispatch(thunks.addChannel({ name, api }));
-      handleClose();
+    onSubmit: async ({ name }) => {
+      const typeName = 'newChannel';
+      const ss = await dispatch(thunks.addChannel({ typeName, name, api }));
+      if (ss.meta.requestStatus === 'fulfilled') handleClose();
     },
     validateOnBlur: false,
     validateOnChange: false,
@@ -45,6 +46,7 @@ const AddChannelModal = ({ handleClose }) => {
               placeholder=""
               onChange={formik.handleChange}
               autoFocus
+              disabled={formik.isSubmitting}
             />
             <Form.Control.Feedback type="invalid">
               {formik.errors.name}
@@ -54,7 +56,7 @@ const AddChannelModal = ({ handleClose }) => {
             <Button className="me-2" variant="secondary" onClick={handleClose}>
               Отмена
             </Button>
-            <Button variant="primary" type="submit">
+            <Button disabled={formik.isSubmitting} variant="primary" type="submit">
               Добавить
             </Button>
           </div>
@@ -68,9 +70,11 @@ const RemoveChannelModal = ({ handleClose }) => {
   const api = useApi();
   const dispatch = useDispatch();
   const id = useSelector((state) => state.modal.id);
-  const handleRemove = () => {
-    dispatch(thunks.removeChannel({ id, api }));
-    handleClose();
+
+  const handleRemove = async () => {
+    const typeName = 'removeChannel';
+    const ss = await dispatch(thunks.removeChannel({ typeName, id, api }));
+    if (ss.meta.requestStatus === 'fulfilled') handleClose();
   };
 
   return (
@@ -96,9 +100,11 @@ const RenameChannelModal = ({ handleClose }) => {
   const api = useApi();
   const dispatch = useDispatch();
   const inputRef = useRef();
+
   useEffect(() => {
     inputRef.current.select();
   }, []);
+
   const id = useSelector((state) => state.modal.id);
   const channelName = useSelector((state) => selectors.selectById(state, id)).name;
   const channelsNames = useSelector(selectors.selectAll).map((ch) => ch.name);
@@ -108,9 +114,12 @@ const RenameChannelModal = ({ handleClose }) => {
       name: channelName,
     },
     validationSchema: getSchema(channelsNames),
-    onSubmit: ({ name }) => {
-      dispatch(thunks.renameChannel({ id, name, api }));
-      handleClose();
+    onSubmit: async ({ name }) => {
+      const typeName = 'renameChannel';
+      const ss = await dispatch(thunks.renameChannel({
+        typeName, id, name, api,
+      }));
+      if (ss.meta.requestStatus === 'fulfilled') handleClose();
     },
     validateOnBlur: false,
     validateOnChange: false,
@@ -131,6 +140,7 @@ const RenameChannelModal = ({ handleClose }) => {
               type="text"
               placeholder=""
               onChange={formik.handleChange}
+              disabled={formik.isSubmitting}
             />
             <Form.Control.Feedback type="invalid">
               {formik.errors.name}
@@ -140,7 +150,7 @@ const RenameChannelModal = ({ handleClose }) => {
             <Button className="me-2" variant="secondary" onClick={handleClose}>
               Отмена
             </Button>
-            <Button variant="primary" type="submit">
+            <Button disabled={formik.isSubmitting} variant="primary" type="submit">
               Отправить
             </Button>
           </div>

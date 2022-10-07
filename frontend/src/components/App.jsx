@@ -17,6 +17,7 @@ const AuthProvider = ({ children }) => {
   const hasToken = Object.hasOwn(localStorage, 'user');
   const [loggedIn, setLoggedIn] = useState(hasToken);
 
+  const { username } = JSON.parse(localStorage.user);
   const logIn = () => setLoggedIn(true);
   const logOut = () => {
     localStorage.removeItem('user');
@@ -24,7 +25,10 @@ const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={useMemo(() => ({ loggedIn, logIn, logOut }), [loggedIn])}>
+    <AuthContext.Provider value={useMemo(() => ({
+      loggedIn, logIn, logOut, username,
+    }), [loggedIn, username])}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -45,28 +49,16 @@ const App = () => {
   socket.on('newMessage', (m) => {
     dispatch(actions.addMessage(m));
   });
-  socket.on('newChannel', (ch) => {
-    dispatch(actions.addChannel(ch));
-    dispatch(actions.setCurrentChannel(ch.id));
-  });
   socket.on('removeChannel', ({ id }) => {
     dispatch(actions.removeChannel(id));
-    dispatch(actions.setCurrentChannel(1));
   });
   socket.on('renameChannel', (ch) => {
     dispatch(actions.updateChannel({ id: ch.id, changes: { name: ch.name } }));
   });
 
-  const api = useMemo(() => ({
-    sendMessage: (message) => socket.emit('newMessage', message),
-    renameChannel: (data) => socket.emit('renameChannel', data), // data = { id, name }
-    addChannel: (name) => socket.emit('newChannel', { name }),
-    removeChannel: (id) => socket.emit('removeChannel', { id }),
-  }), [socket]);
-
   return (
     <AuthProvider>
-      <ApiContext.Provider value={api}>
+      <ApiContext.Provider value={socket}>
         <div className="vh-100 d-flex flex-column">
           <BrowserRouter>
             <NavBar />

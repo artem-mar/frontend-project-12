@@ -3,24 +3,22 @@ import { createSlice, createEntityAdapter, createAsyncThunk } from '@reduxjs/too
 import axios from 'axios';
 import routes from '../routes.js';
 
-export const addChannelThunk = createAsyncThunk(
-  'addChannelThunk',
-  async ({ name, api }) => {
-    await api.addChannel(name);
-  },
-);
-export const removeChannelThunk = createAsyncThunk(
-  'removeChannelThunk',
-  async ({ id, api }) => {
-    await api.removeChannel(id);
-  },
-);
-export const renameChannelThunk = createAsyncThunk(
-  'renameChannelThunk',
-  async ({ id, name, api }) => {
-    await api.renameChannel({ id, name });
-  },
-);
+export const payloadCreator = ({ typeName, api, ...args }) => new Promise((resolve, reject) => {
+  setTimeout(() => {
+    reject(Error('network Error'));
+  }, 2000);
+
+  api.emit(typeName, { ...args }, (r) => {
+    if (r.status === 'ok') {
+      resolve(r.data);
+    }
+    reject(Error('socket Error'));
+  });
+});
+
+export const addChannelThunk = createAsyncThunk('addChannelThunk', payloadCreator);
+export const removeChannelThunk = createAsyncThunk('removeChannelThunk', payloadCreator);
+export const renameChannelThunk = createAsyncThunk('renameChannelThunk', payloadCreator);
 export const fetchData = createAsyncThunk(
   'fetchData',
   async () => {
@@ -31,12 +29,12 @@ export const fetchData = createAsyncThunk(
   },
 );
 
+const defaultChannelId = 1;
 const channelsAdapter = createEntityAdapter();
-const initialState = channelsAdapter.getInitialState();
 
 const channelsSlice = createSlice({
   name: 'channels',
-  initialState: { ...initialState, currentChannelId: 1 },
+  initialState: channelsAdapter.getInitialState({ currentChannelId: defaultChannelId }),
   reducers: {
     addChannels: channelsAdapter.addMany,
     addChannel: channelsAdapter.addOne,
@@ -46,6 +44,16 @@ const channelsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(addChannelThunk.fulfilled, (state, { payload }) => {
+        channelsAdapter.addOne(state, payload);
+        state.currentChannelId = payload.id;
+      })
+      // .addCase(addChannelThunk.rejected, (state, action) => {
+      //   console.log(action);
+      // })
+      .addCase(removeChannelThunk.fulfilled, (state) => {
+        state.currentChannelId = defaultChannelId;
+      })
       .addCase(fetchData.fulfilled, (state, { payload }) => {
         channelsAdapter.addMany(state, payload.channels);
       });

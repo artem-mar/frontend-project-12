@@ -1,22 +1,15 @@
 import { createSlice, createEntityAdapter, createAsyncThunk } from '@reduxjs/toolkit';
-import { fetchData, removeChannelThunk } from './channelsSlice.js';
+import { fetchData, removeChannelThunk, payloadCreator } from './channelsSlice.js';
 
-export const sendMessageThunk = createAsyncThunk(
-  'sendMessageThunk',
-  async ({ message, api }) => {
-    await api.sendMessage(message);
-  },
-);
+export const sendMessageThunk = createAsyncThunk('sendMessageThunk', payloadCreator);
 
 const messagesAdapter = createEntityAdapter();
-const initialState = messagesAdapter.getInitialState();
 
 const messagesSlice = createSlice({
   name: 'messages',
-  initialState,
+  initialState: messagesAdapter.getInitialState(),
   reducers: {
     addMessage: messagesAdapter.addOne,
-    addMessages: messagesAdapter.addMany,
   },
   extraReducers: (builder) => {
     builder

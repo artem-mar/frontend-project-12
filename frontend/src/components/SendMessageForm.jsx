@@ -1,8 +1,10 @@
 import React, { useRef, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
+import { useFormik } from 'formik';
+import * as yup from 'yup';
 import { Form, InputGroup, Button } from 'react-bootstrap';
 import { thunks } from '../slices/index.js';
-import { useApi } from '../hooks/index.js';
+import { useApi, useAuth } from '../hooks/index.js';
 
 const sendImg = (
   <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" className="bi bi-send-fill" viewBox="0 0 16 16">
@@ -14,34 +16,43 @@ const SendMessageForm = ({ channelId }) => {
   const chatInput = useRef(null);
   const dispatch = useDispatch();
   const api = useApi();
+  const { username } = useAuth();
 
   useEffect(() => {
     chatInput.current.focus();
   });
 
-  const submitMessage = async (e) => {
-    e.preventDefault();
-    const body = chatInput.current.value;
-    const { username } = JSON.parse(localStorage.user);
-    const message = {
-      body, username, channelId,
-    };
+  const formik = useFormik({
+    initialValues: {
+      body: '',
+    },
+    validationSchema: yup.object().shape({
+      body: yup.string().required().trim(),
+    }),
+    onSubmit: async ({ body }) => {
+      const typeName = 'newMessage';
 
-    dispatch(thunks.sendMessage({ message, api }));
-    chatInput.current.value = '';
-    chatInput.current.focus();
-  };
+      const ss = await dispatch(thunks.sendMessage({
+        body, username, channelId, api, typeName,
+      }));
+      if (ss.meta.requestStatus === 'fulfilled') formik.resetForm();
+    },
+    validateOnBlur: false,
+  });
 
   return (
-    <Form onSubmit={submitMessage}>
+    <Form noValidate onSubmit={formik.handleSubmit}>
       <InputGroup>
         <Form.Control
-          noValidate
+          id="body"
           placeholder="Введите сообщение..."
           aria-label="chat input"
           ref={chatInput}
+          onChange={formik.handleChange}
+          value={formik.values.body}
+          disabled={formik.isSubmitting}
         />
-        <Button type="submit" variant="outline-secondary">
+        <Button disabled={!formik.isValid || formik.isSubmitting} type="submit" variant="outline-secondary">
           {sendImg}
         </Button>
       </InputGroup>
