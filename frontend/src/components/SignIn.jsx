@@ -8,15 +8,9 @@ import { useAuth } from '../hooks/index.js';
 import signInImage from '../assets/sign_in.svg';
 import routes from '../routes.js';
 
-yup.setLocale({
-  string: {
-    matches: 'password must contain numbers and letters',
-  },
-});
 const schema = yup.object().shape({
   username: yup.string().required().min(3),
   password: yup.string().required().min(4),
-  // password: yup.string().required().min(6).matches(/^(?=.*[a-zA-Z])(?=.*[0-9])(?!.*[^\w\s])/),
 });
 
 const SignIn = () => {
