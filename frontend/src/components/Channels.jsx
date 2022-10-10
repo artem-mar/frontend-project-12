@@ -1,5 +1,6 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { selectors } from '../slices/channelsSlice.js';
 import Channel from './Channel.jsx';
 import { actions } from '../slices/index.js';
@@ -12,6 +13,7 @@ const plusButtonImg = (
 
 const Channels = () => {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const channels = useSelector(selectors.selectAll);
   const handleOpen = () => {
     dispatch(actions.openModal({ type: 'addChannel' }));
@@ -20,7 +22,7 @@ const Channels = () => {
   return (
     <>
       <div className="d-flex justify-content-between ps-2">
-        <span>Каналы</span>
+        <span>{t('channels')}</span>
         <button onClick={handleOpen} type="button" className="btn p-0">
           {plusButtonImg}
         </button>

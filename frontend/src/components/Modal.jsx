@@ -1,6 +1,8 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Button, Modal, Form } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { actions, thunks } from '../slices/index.js';
@@ -8,12 +10,15 @@ import { selectors } from '../slices/channelsSlice.js';
 import { useApi } from '../hooks/index.js';
 
 const getSchema = (channelsNames) => yup.object().shape({
-  name: yup.string().required().trim().min(3)
-    .max(20)
-    .notOneOf(channelsNames),
+  name: yup.string().trim()
+    .required('modals.required')
+    .min(3, 'modals.size')
+    .max(20, 'modals.size')
+    .notOneOf(channelsNames, 'modals.unique'),
 });
 
 const AddChannelModal = ({ handleClose }) => {
+  const { t } = useTranslation();
   const api = useApi();
   const dispatch = useDispatch();
   const channelsNames = useSelector(selectors.selectAll).map((ch) => ch.name);
@@ -25,8 +30,14 @@ const AddChannelModal = ({ handleClose }) => {
     validationSchema: getSchema(channelsNames),
     onSubmit: async ({ name }) => {
       const typeName = 'newChannel';
-      const ss = await dispatch(thunks.addChannel({ typeName, name, api }));
-      if (ss.meta.requestStatus === 'fulfilled') handleClose();
+      const { meta, error } = await dispatch(thunks.addChannel({ typeName, name, api }));
+      if (meta.requestStatus === 'fulfilled') {
+        handleClose();
+        toast.success(t('toasts.added'));
+      }
+      if (error) {
+        toast.error(t(`toasts.${error.message}`));
+      }
     },
     validateOnBlur: false,
     validateOnChange: false,
@@ -35,7 +46,7 @@ const AddChannelModal = ({ handleClose }) => {
   return (
     <>
       <Modal.Header closeButton>
-        <Modal.Title>Добавить канал</Modal.Title>
+        <Modal.Title>{t('modals.addChannel')}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form className="" noValidate onSubmit={formik.handleSubmit}>
@@ -49,15 +60,15 @@ const AddChannelModal = ({ handleClose }) => {
               disabled={formik.isSubmitting}
             />
             <Form.Control.Feedback type="invalid">
-              {formik.errors.name}
+              {t(formik.errors.name)}
             </Form.Control.Feedback>
           </Form.Group>
           <div className="d-flex justify-content-end">
             <Button className="me-2" variant="secondary" onClick={handleClose}>
-              Отмена
+              {t('modals.cancel')}
             </Button>
             <Button disabled={formik.isSubmitting} variant="primary" type="submit">
-              Добавить
+              {t('modals.submit')}
             </Button>
           </div>
         </Form>
@@ -67,28 +78,37 @@ const AddChannelModal = ({ handleClose }) => {
 };
 
 const RemoveChannelModal = ({ handleClose }) => {
+  const { t } = useTranslation();
   const api = useApi();
   const dispatch = useDispatch();
   const id = useSelector((state) => state.modal.id);
+  const [submitting, setSubmitting] = useState(false);
 
   const handleRemove = async () => {
+    setSubmitting(true);
     const typeName = 'removeChannel';
-    const ss = await dispatch(thunks.removeChannel({ typeName, id, api }));
-    if (ss.meta.requestStatus === 'fulfilled') handleClose();
+    const { meta, error } = await dispatch(thunks.removeChannel({ typeName, id, api }));
+    if (meta.requestStatus === 'fulfilled') {
+      handleClose();
+      toast.success(t('toasts.removed'));
+    }
+    if (error) {
+      toast.error(t(`toasts.${error.message}`));
+    }
   };
 
   return (
     <>
       <Modal.Header closeButton>
-        <Modal.Title>Удалить канал?</Modal.Title>
+        <Modal.Title>{t('modals.removeChannel')}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <div className="d-flex justify-content-end">
           <Button className="me-2" variant="secondary" onClick={handleClose}>
-            Отмена
+            {t('modals.cancel')}
           </Button>
-          <Button variant="danger" onClick={handleRemove}>
-            Удалить
+          <Button disabled={submitting} variant="danger" onClick={handleRemove}>
+            {t('modals.remove')}
           </Button>
         </div>
       </Modal.Body>
@@ -97,6 +117,7 @@ const RemoveChannelModal = ({ handleClose }) => {
 };
 
 const RenameChannelModal = ({ handleClose }) => {
+  const { t } = useTranslation();
   const api = useApi();
   const dispatch = useDispatch();
   const inputRef = useRef();
@@ -116,10 +137,16 @@ const RenameChannelModal = ({ handleClose }) => {
     validationSchema: getSchema(channelsNames),
     onSubmit: async ({ name }) => {
       const typeName = 'renameChannel';
-      const ss = await dispatch(thunks.renameChannel({
+      const { meta, error } = await dispatch(thunks.renameChannel({
         typeName, id, name, api,
       }));
-      if (ss.meta.requestStatus === 'fulfilled') handleClose();
+      if (meta.requestStatus === 'fulfilled') {
+        handleClose();
+        toast.success(t('toasts.renamed'));
+      }
+      if (error) {
+        toast.error(t(`toasts.${error.message}`));
+      }
     },
     validateOnBlur: false,
     validateOnChange: false,
@@ -128,7 +155,7 @@ const RenameChannelModal = ({ handleClose }) => {
   return (
     <>
       <Modal.Header closeButton>
-        <Modal.Title>Переименовать канал</Modal.Title>
+        <Modal.Title>{t('modals.renameChannel')}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form className="" noValidate onSubmit={formik.handleSubmit}>
@@ -143,15 +170,15 @@ const RenameChannelModal = ({ handleClose }) => {
               disabled={formik.isSubmitting}
             />
             <Form.Control.Feedback type="invalid">
-              {formik.errors.name}
+              {t(formik.errors.name)}
             </Form.Control.Feedback>
           </Form.Group>
           <div className="d-flex justify-content-end">
             <Button className="me-2" variant="secondary" onClick={handleClose}>
-              Отмена
+              {t('modals.cancel')}
             </Button>
             <Button disabled={formik.isSubmitting} variant="primary" type="submit">
-              Отправить
+              {t('modals.submit')}
             </Button>
           </div>
         </Form>

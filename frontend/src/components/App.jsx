@@ -1,16 +1,16 @@
 import React, { useState, useMemo } from 'react';
+import { useDispatch } from 'react-redux';
 import {
   Routes, Route, BrowserRouter, Navigate, useLocation,
 } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { io } from 'socket.io-client';
+import { ToastContainer } from 'react-toastify';
 import NavBar from './NavBar.jsx';
 import SignIn from './SignIn.jsx';
 import SignUp from './SignUp.jsx';
 import ChatPage from './ChatPage.jsx';
 import PageNotFound from './PageNotFound.jsx';
-import { AuthContext, ApiContext } from '../contexts/index.js';
-import { useAuth } from '../hooks/index.js';
+import { AuthContext } from '../contexts/index.js';
+import { useAuth, useApi } from '../hooks/index.js';
 import { actions } from '../slices/index.js';
 
 const AuthProvider = ({ children }) => {
@@ -44,7 +44,7 @@ const PrivateRoute = ({ children }) => {
 
 const App = () => {
   const dispatch = useDispatch();
-  const socket = io();
+  const socket = useApi();
 
   socket.on('newMessage', (m) => {
     dispatch(actions.addMessage(m));
@@ -58,19 +58,18 @@ const App = () => {
 
   return (
     <AuthProvider>
-      <ApiContext.Provider value={socket}>
-        <div className="vh-100 d-flex flex-column">
-          <BrowserRouter>
-            <NavBar />
-            <Routes>
-              <Route path="/" element={<PrivateRoute><ChatPage /></PrivateRoute>} />
-              <Route path="/login" element={<SignIn />} />
-              <Route path="/signup" element={<SignUp />} />
-              <Route path="*" element={<PageNotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </div>
-      </ApiContext.Provider>
+      <div className="vh-100 d-flex flex-column">
+        <BrowserRouter>
+          <NavBar />
+          <Routes>
+            <Route path="/" element={<PrivateRoute><ChatPage /></PrivateRoute>} />
+            <Route path="/login" element={<SignIn />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="*" element={<PageNotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </div>
+      <ToastContainer />
     </AuthProvider>
   );
 };

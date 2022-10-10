@@ -1,13 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
-import App from './components/App';
+import init from './init.jsx';
 import store from './slices/index.js';
+import 'react-toastify/dist/ReactToastify.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <Provider store={store}>
-    <App />
-  </Provider>,
-);
+const run = async () => {
+  const root = ReactDOM.createRoot(document.getElementById('root'));
+  const app = await init();
+  root.render(
+    <Provider store={store}>
+      {app}
+    </Provider>,
+  );
+};
+
+run();

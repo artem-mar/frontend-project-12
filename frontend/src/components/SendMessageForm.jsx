@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useFormik } from 'formik';
+import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { Form, InputGroup, Button } from 'react-bootstrap';
 import { thunks } from '../slices/index.js';
@@ -13,6 +14,7 @@ const sendImg = (
 );
 
 const SendMessageForm = ({ channelId }) => {
+  const { t } = useTranslation();
   const chatInput = useRef(null);
   const dispatch = useDispatch();
   const api = useApi();
@@ -45,8 +47,8 @@ const SendMessageForm = ({ channelId }) => {
       <InputGroup>
         <Form.Control
           id="body"
-          placeholder="Введите сообщение..."
-          aria-label="chat input"
+          placeholder={t('chat.enterMessage')}
+          aria-label={t('chat.enterMessage')}
           ref={chatInput}
           onChange={formik.handleChange}
           value={formik.values.body}

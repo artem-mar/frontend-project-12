@@ -2,26 +2,33 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useFormik } from 'formik';
 import axios from 'axios';
 import * as yup from 'yup';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Button, Form, FloatingLabel } from 'react-bootstrap';
 import { useAuth } from '../hooks/index.js';
 import signUpImage from '../assets/sign_up.svg';
 import routes from '../routes.js';
 
-yup.setLocale({
-  string: {
-    matches: 'password must contain numbers and letters',
-  },
-});
 const schema = yup.object().shape({
-  username: yup.string().required().min(3).max(20)
+  username: yup
+    .string()
+    .required('signUp.required')
+    .min(3, 'signUp.usernameSize')
+    .max(20, 'signUp.usernameSize')
     .trim(),
-  password: yup.string().required().min(6).trim(),
-  passwordComfirmation: yup.string().equals([yup.ref('password')], 'Пароли должны совпадать'),
+  password: yup
+    .string()
+    .required('signUp.required')
+    .min(6, 'signUp.passwordSize')
+    .trim(),
+  passwordComfirmation: yup
+    .string()
+    .equals([yup.ref('password')], 'signUp.passwordMatches'),
 });
 
 const SignIn = () => {
-  const [regError, setRegError] = useState(false);
+  const { t } = useTranslation();
+  const [regFailed, setRegFailed] = useState(false);
   const auth = useAuth();
   const navigate = useNavigate();
   const inputRef = useRef(null);
@@ -37,7 +44,7 @@ const SignIn = () => {
     },
     validationSchema: schema,
     onSubmit: async (values) => {
-      setRegError(null);
+      setRegFailed(false);
       try {
         const { data } = await axios.post(routes.signUpPath(), values);
         localStorage.setItem('user', JSON.stringify(data));
@@ -45,7 +52,7 @@ const SignIn = () => {
         navigate('/');
       } catch (e) {
         if (e.response.status === 409) {
-          setRegError('такой юзер уже есть');
+          setRegFailed(true);
           inputRef.current.select();
         }
       }
@@ -55,18 +62,18 @@ const SignIn = () => {
   return (
     <div className="container-fluid h-100">
       <div className="row align-items-center justify-content-center h-100">
-        <div className="col col-12 col-md-8 bg-light">
+        <div className="col col-12 col-md-8">
           <div className="card">
             <div className="card-body row p-5">
               <div className="col-12 col-md-6 d-flex align-items-center justify-content-center">
-                <img src={signUpImage} alt="Sign In" style={{ height: '200px' }} />
+                <img src={signUpImage} alt={t('signUp.header')} style={{ height: '250px' }} />
               </div>
               <div className="col-12 col-md-6">
                 <Form onSubmit={formik.handleSubmit} className="mt-3">
-                  <h1 className="text-center mb-4">Регистрация</h1>
+                  <h1 className="text-center mb-4">{t('signUp.header')}</h1>
                   <FloatingLabel
                     controlId="username"
-                    label="Имя пользователя"
+                    label={t('signUp.username')}
                     className="mb-3"
                   >
                     <Form.Control
@@ -74,53 +81,57 @@ const SignIn = () => {
                       required
                       onBlur={formik.handleBlur}
                       onChange={formik.handleChange}
-                      isInvalid={(formik.errors.username && formik.touched.username) || regError}
+                      isInvalid={(formik.errors.username && formik.touched.username) || regFailed}
                       type="text"
-                      placeholder="Имя пользователя"
+                      placeholder={t('signUp.username')}
                     />
+                    {formik.errors.username && (
                     <Form.Control.Feedback type="invalid" tooltip>
-                      {formik.errors.username}
+                      {t(formik.errors.username)}
                     </Form.Control.Feedback>
+                    )}
                   </FloatingLabel>
 
                   <FloatingLabel
                     controlId="password"
-                    label="Пароль"
+                    label={t('signUp.password')}
                     className="mb-3"
                   >
                     <Form.Control
                       required
                       onBlur={formik.handleBlur}
                       onChange={formik.handleChange}
-                      isInvalid={(formik.errors.password && formik.touched.password) || regError}
+                      isInvalid={(formik.errors.password && formik.touched.password) || regFailed}
                       type="password"
-                      placeholder="Пароль"
+                      placeholder={t('signUp.password')}
                     />
+                    {formik.errors.password && (
                     <Form.Control.Feedback type="invalid" tooltip>
-                      {formik.errors.password}
+                      {t(formik.errors.password)}
                     </Form.Control.Feedback>
+                    )}
                   </FloatingLabel>
 
                   <FloatingLabel
                     controlId="passwordComfirmation"
-                    label="Подтвердите пароль"
+                    label={t('signUp.passwordConfirmation')}
                     className="mb-4"
                   >
                     <Form.Control
                       required
                       onBlur={formik.handleBlur}
                       onChange={formik.handleChange}
-                      isInvalid={formik.errors.passwordComfirmation || regError}
+                      isInvalid={formik.errors.passwordComfirmation || regFailed}
                       type="password"
-                      placeholder="Подтвердите пароль"
+                      placeholder={t('signUp.passwordConfirmation')}
                     />
                     <Form.Control.Feedback type="invalid" tooltip>
-                      {formik.errors.passwordComfirmation || regError}
+                      {t(formik.errors.passwordComfirmation) || t('signUp.regFailed')}
                     </Form.Control.Feedback>
                   </FloatingLabel>
 
                   <Button disabled={formik.isSubmitting} variant="outline-primary" type="submit" className="w-100 mb-3">
-                    Зарегистрироваться
+                    {t('signUp.submit')}
                   </Button>
                 </Form>
               </div>

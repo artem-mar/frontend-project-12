@@ -5,14 +5,14 @@ import routes from '../routes.js';
 
 export const payloadCreator = ({ typeName, api, ...args }) => new Promise((resolve, reject) => {
   setTimeout(() => {
-    reject(Error('network Error'));
+    reject(Error('networkError'));
   }, 2000);
 
   api.emit(typeName, { ...args }, (r) => {
     if (r.status === 'ok') {
       resolve(r.data);
     }
-    reject(Error('socket Error'));
+    reject(Error('unknownError'));
   });
 });
 
@@ -48,9 +48,6 @@ const channelsSlice = createSlice({
         channelsAdapter.addOne(state, payload);
         state.currentChannelId = payload.id;
       })
-      // .addCase(addChannelThunk.rejected, (state, action) => {
-      //   console.log(action);
-      // })
       .addCase(removeChannelThunk.fulfilled, (state) => {
         state.currentChannelId = defaultChannelId;
       })

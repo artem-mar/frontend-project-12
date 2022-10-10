@@ -1,10 +1,12 @@
 import React, { useRef, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { selectors as messagesSelectors } from '../slices/messagesSlice.js';
 import { selectors as channelsSelectors } from '../slices/channelsSlice.js';
 import SendMessageForm from './SendMessageForm.jsx';
 
 const Chat = () => {
+  const { t } = useTranslation();
   const messagesList = useRef(null);
 
   useEffect(() => {
@@ -26,7 +28,7 @@ const Chat = () => {
           <b>{`# ${currentChannelName}`}</b>
         </p>
         <span className="text-muted">
-          {`${messages.length} сообщений`}
+          {t('chat.message', { count: messages.length })}
         </span>
       </div>
       <div className="px-5 overflow-auto">
