@@ -4,6 +4,8 @@ import axios from 'axios';
 import * as yup from 'yup';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import filter from 'leo-profanity';
 import { Button, Form, FloatingLabel } from 'react-bootstrap';
 import { useAuth } from '../hooks/index.js';
 import signUpImage from '../assets/sign_up.svg';
@@ -12,6 +14,7 @@ import routes from '../routes.js';
 const schema = yup.object().shape({
   username: yup
     .string()
+    .test({ test: (v) => !filter.check(v), message: 'signUp.profanity' })
     .required('signUp.required')
     .min(3, 'signUp.usernameSize')
     .max(20, 'signUp.usernameSize')
@@ -26,7 +29,7 @@ const schema = yup.object().shape({
     .equals([yup.ref('password')], 'signUp.passwordMatches'),
 });
 
-const SignIn = () => {
+const SignUp = () => {
   const { t } = useTranslation();
   const [regFailed, setRegFailed] = useState(false);
   const auth = useAuth();
@@ -51,9 +54,11 @@ const SignIn = () => {
         auth.logIn();
         navigate('/');
       } catch (e) {
-        if (e.response.status === 409) {
+        if (e.request.status === 409) {
           setRegFailed(true);
           inputRef.current.select();
+        } else {
+          toast.error(t('toasts.networkError'));
         }
       }
     },
@@ -143,4 +148,4 @@ const SignIn = () => {
   );
 };
 
-export default SignIn;
+export default SignUp;

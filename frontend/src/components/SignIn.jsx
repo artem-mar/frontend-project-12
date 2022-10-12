@@ -4,6 +4,7 @@ import axios from 'axios';
 import * as yup from 'yup';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { Button, Form, FloatingLabel } from 'react-bootstrap';
 import { useAuth } from '../hooks/index.js';
 import signInImage from '../assets/sign_in.svg';
@@ -38,8 +39,12 @@ const SignIn = () => {
         auth.logIn();
         navigate('/');
       } catch (e) {
-        setAuthFailed(true);
-        inputRef.current.select();
+        if (e.request.status === 401) {
+          setAuthFailed(true);
+          inputRef.current.select();
+        } else {
+          toast.error(t('toasts.networkError'));
+        }
       }
     },
   });

@@ -23,6 +23,7 @@ export default {
       passwordSize: 'At least 6 characters',
       passwordMatches: 'Passwords must match',
       regFailed: 'A user with this name already exists',
+      profanity: 'Use of profanity is prohibited',
     },
     chat: {
       message_one: '{{count}} message',
@@ -48,7 +49,7 @@ export default {
     },
     toasts: {
       added: 'Channel added',
-      removed: 'Channel deleted',
+      removed: 'Channel removed',
       renamed: 'Channel renamed',
       networkError: 'Network error',
       unknownError: 'Unknown error',

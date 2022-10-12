@@ -3,6 +3,7 @@ import { Button, Modal, Form } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
+import filter from 'leo-profanity';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { actions, thunks } from '../slices/index.js';
@@ -30,7 +31,12 @@ const AddChannelModal = ({ handleClose }) => {
     validationSchema: getSchema(channelsNames),
     onSubmit: async ({ name }) => {
       const typeName = 'newChannel';
-      const { meta, error } = await dispatch(thunks.addChannel({ typeName, name, api }));
+      const channel = {
+        typeName,
+        name: filter.clean(name),
+        api,
+      };
+      const { meta, error } = await dispatch(thunks.addChannel(channel));
       if (meta.requestStatus === 'fulfilled') {
         handleClose();
         toast.success(t('toasts.added'));
@@ -137,9 +143,13 @@ const RenameChannelModal = ({ handleClose }) => {
     validationSchema: getSchema(channelsNames),
     onSubmit: async ({ name }) => {
       const typeName = 'renameChannel';
-      const { meta, error } = await dispatch(thunks.renameChannel({
-        typeName, id, name, api,
-      }));
+      const channel = {
+        name: filter.clean(name),
+        typeName,
+        id,
+        api,
+      };
+      const { meta, error } = await dispatch(thunks.renameChannel(channel));
       if (meta.requestStatus === 'fulfilled') {
         handleClose();
         toast.success(t('toasts.renamed'));

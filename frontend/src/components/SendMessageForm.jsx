@@ -2,6 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
+import filter from 'leo-profanity';
 import * as yup from 'yup';
 import { Form, InputGroup, Button } from 'react-bootstrap';
 import { thunks } from '../slices/index.js';
@@ -32,10 +33,11 @@ const SendMessageForm = ({ channelId }) => {
       body: yup.string().required().trim(),
     }),
     onSubmit: async ({ body }) => {
+      const clean = filter.clean(body);
       const typeName = 'newMessage';
 
       const ss = await dispatch(thunks.sendMessage({
-        body, username, channelId, api, typeName,
+        body: clean, username, channelId, api, typeName,
       }));
       if (ss.meta.requestStatus === 'fulfilled') formik.resetForm();
     },

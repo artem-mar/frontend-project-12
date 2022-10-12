@@ -23,6 +23,7 @@ export default {
       passwordSize: 'Не менее 6 символов',
       passwordMatches: 'Пароли должны совпадать',
       regFailed: 'Такой пользователь уже существует',
+      profanity: 'Использование ненормативной лексики запрещено',
     },
     chat: {
       message_one: '{{count}} сообщение',
