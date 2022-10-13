@@ -31,6 +31,7 @@ export default {
       message_many: '{{count}} messages',
       message_zero: '{{count}} messages',
       enterMessage: 'Enter Message...',
+      newMessage: 'New message',
     },
     channel: {
       remove: 'Remove',

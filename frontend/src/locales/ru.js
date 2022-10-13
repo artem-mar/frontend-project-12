@@ -31,6 +31,7 @@ export default {
       message_many: '{{count}} сообщений',
       message_zero: '{{count}} сообщений',
       enterMessage: 'Введите сообщение...',
+      newMessage: 'Новое сообщение',
     },
     channel: {
       remove: 'Удалить',

@@ -57,7 +57,7 @@ const SendMessageForm = ({ channelId }) => {
         <Form.Control
           id="body"
           placeholder={t('chat.enterMessage')}
-          aria-label={t('chat.enterMessage')}
+          aria-label={t('chat.newMessage')}
           ref={chatInput}
           onChange={formik.handleChange}
           value={formik.values.body}
