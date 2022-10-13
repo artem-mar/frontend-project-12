@@ -3,6 +3,7 @@ import { useFormik } from 'formik';
 import axios from 'axios';
 import * as yup from 'yup';
 import { useTranslation } from 'react-i18next';
+import { useRollbar } from '@rollbar/react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import filter from 'leo-profanity';
@@ -31,6 +32,7 @@ const schema = yup.object().shape({
 
 const SignUp = () => {
   const { t } = useTranslation();
+  const rollbar = useRollbar();
   const [regFailed, setRegFailed] = useState(false);
   const auth = useAuth();
   const navigate = useNavigate();
@@ -54,6 +56,7 @@ const SignUp = () => {
         auth.logIn();
         navigate('/');
       } catch (e) {
+        rollbar('SignUp/submit', e);
         if (e.request.status === 409) {
           setRegFailed(true);
           inputRef.current.select();

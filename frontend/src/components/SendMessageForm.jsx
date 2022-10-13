@@ -2,6 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
+import { useRollbar } from '@rollbar/react';
 import filter from 'leo-profanity';
 import * as yup from 'yup';
 import { Form, InputGroup, Button } from 'react-bootstrap';
@@ -15,6 +16,7 @@ const sendImg = (
 );
 
 const SendMessageForm = ({ channelId }) => {
+  const rollbar = useRollbar();
   const { t } = useTranslation();
   const chatInput = useRef(null);
   const dispatch = useDispatch();
@@ -36,10 +38,15 @@ const SendMessageForm = ({ channelId }) => {
       const clean = filter.clean(body);
       const typeName = 'newMessage';
 
-      const ss = await dispatch(thunks.sendMessage({
+      const { meta, error } = await dispatch(thunks.sendMessage({
         body: clean, username, channelId, api, typeName,
       }));
-      if (ss.meta.requestStatus === 'fulfilled') formik.resetForm();
+      if (meta.requestStatus === 'fulfilled') {
+        formik.resetForm();
+      }
+      if (error) {
+        rollbar('SendMessageForm/submit', error);
+      }
     },
     validateOnBlur: false,
   });

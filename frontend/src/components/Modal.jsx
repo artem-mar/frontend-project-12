@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { Button, Modal, Form } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
+import { useRollbar } from '@rollbar/react';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 import filter from 'leo-profanity';
@@ -19,6 +20,7 @@ const getSchema = (channelsNames) => yup.object().shape({
 });
 
 const AddChannelModal = ({ handleClose }) => {
+  const rollbar = useRollbar();
   const { t } = useTranslation();
   const api = useApi();
   const dispatch = useDispatch();
@@ -43,6 +45,7 @@ const AddChannelModal = ({ handleClose }) => {
       }
       if (error) {
         toast.error(t(`toasts.${error.message}`));
+        rollbar.error('AddChannelModal/submit', error);
       }
     },
     validateOnBlur: false,
@@ -84,6 +87,7 @@ const AddChannelModal = ({ handleClose }) => {
 };
 
 const RemoveChannelModal = ({ handleClose }) => {
+  const rollbar = useRollbar();
   const { t } = useTranslation();
   const api = useApi();
   const dispatch = useDispatch();
@@ -100,6 +104,7 @@ const RemoveChannelModal = ({ handleClose }) => {
     }
     if (error) {
       toast.error(t(`toasts.${error.message}`));
+      rollbar('RemoveChannelModal/submit', error);
     }
   };
 
@@ -123,6 +128,7 @@ const RemoveChannelModal = ({ handleClose }) => {
 };
 
 const RenameChannelModal = ({ handleClose }) => {
+  const rollbar = useRollbar();
   const { t } = useTranslation();
   const api = useApi();
   const dispatch = useDispatch();
@@ -156,6 +162,7 @@ const RenameChannelModal = ({ handleClose }) => {
       }
       if (error) {
         toast.error(t(`toasts.${error.message}`));
+        rollbar('RenameChannelModal/submit', error);
       }
     },
     validateOnBlur: false,

@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { Navigate, useLocation } from 'react-router-dom';
+import { useRollbar } from '@rollbar/react';
 import Channels from './Channels.jsx';
 import Chat from './Chat.jsx';
 import { thunks } from '../slices/index.js';
@@ -8,11 +9,16 @@ import { useAuth } from '../hooks/index.js';
 import Modal from './Modal.jsx';
 
 const ChatPage = () => {
+  const rollbar = useRollbar();
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(thunks.fetchData());
-  }, [dispatch]);
+    const fetch = async () => {
+      const { error } = await dispatch(thunks.fetchData());
+      if (error) rollbar.error('ChatPage/fetchData', error);
+    };
+    fetch();
+  }, [dispatch, rollbar]);
 
   const auth = useAuth();
   const location = useLocation();
