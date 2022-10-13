@@ -41,12 +41,12 @@ const SignIn = () => {
         auth.logIn();
         navigate('/');
       } catch (e) {
-        rollbar.error('SignIn/submit', e);
         if (e.request.status === 401) {
           setAuthFailed(true);
           inputRef.current.select();
         } else {
           toast.error(t('toasts.networkError'));
+          rollbar.error('SignIn/submit', e);
         }
       }
     },

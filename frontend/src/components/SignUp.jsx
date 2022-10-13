@@ -56,12 +56,12 @@ const SignUp = () => {
         auth.logIn();
         navigate('/');
       } catch (e) {
-        rollbar('SignUp/submit', e);
         if (e.request.status === 409) {
           setRegFailed(true);
           inputRef.current.select();
         } else {
           toast.error(t('toasts.networkError'));
+          rollbar.error('SignUp/submit', e);
         }
       }
     },
