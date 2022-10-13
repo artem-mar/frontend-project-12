@@ -24,6 +24,7 @@ const Channels = () => {
       <div className="d-flex justify-content-between ps-2">
         <span>{t('channels')}</span>
         <button onClick={handleOpen} type="button" className="btn p-0">
+          <span className="d-none">+</span>
           {plusButtonImg}
         </button>
       </div>
