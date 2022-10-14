@@ -40,8 +40,9 @@ const Channel = ({ channel: { id, name, removable } }) => {
           title=""
           variant={variant}
         >
-          <Dropdown.Toggle variant={variant} id="dropdown-basic" />
-          <span className="visually-hidden">{t('channel.control')}</span>
+          <Dropdown.Toggle variant={variant} id="dropdown-basic">
+            <span className="visually-hidden">{t('channel.control')}</span>
+          </Dropdown.Toggle>
           <Dropdown.Menu>
             <Dropdown.Item onClick={deleteChannelHandler} className="py-0">{t('channel.remove')}</Dropdown.Item>
             <Dropdown.Divider />
