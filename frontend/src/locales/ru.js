@@ -36,6 +36,7 @@ export default {
     channel: {
       remove: 'Удалить',
       rename: 'Переименовать',
+      control: 'Управление каналом',
     },
     modals: {
       required: 'Обязательное поле',

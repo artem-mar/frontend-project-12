@@ -36,6 +36,7 @@ export default {
     channel: {
       remove: 'Remove',
       rename: 'Rename',
+      control: 'Channel control',
     },
     modals: {
       required: 'Required field',
