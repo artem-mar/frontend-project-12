@@ -50,7 +50,7 @@ export default {
       channelName: 'Имя канала',
     },
     toasts: {
-      added: 'Канал добавлен',
+      added: 'Канал создан',
       removed: 'Канал удалён',
       renamed: 'Канал переименован',
       networkError: 'Ошибка соединения',
