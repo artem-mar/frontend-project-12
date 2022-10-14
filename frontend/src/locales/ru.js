@@ -47,6 +47,7 @@ export default {
       cancel: 'Отменить',
       submit: 'Отправить',
       remove: 'Удалить',
+      channelName: 'Имя канала',
     },
     toasts: {
       added: 'Канал добавлен',

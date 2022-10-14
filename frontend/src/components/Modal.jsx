@@ -60,6 +60,9 @@ const AddChannelModal = ({ handleClose }) => {
       <Modal.Body>
         <Form className="" noValidate onSubmit={formik.handleSubmit}>
           <Form.Group className="mb-3" controlId="name">
+            <Form.Label className="visually-hidden">
+              {t('modals.channelName')}
+            </Form.Label>
             <Form.Control
               isInvalid={!!formik.errors.name}
               type="text"
@@ -177,6 +180,9 @@ const RenameChannelModal = ({ handleClose }) => {
       <Modal.Body>
         <Form className="" noValidate onSubmit={formik.handleSubmit}>
           <Form.Group className="mb-3" controlId="name">
+            <Form.Label className="visually-hidden">
+              {t('modals.channelName')}
+            </Form.Label>
             <Form.Control
               ref={inputRef}
               value={formik.values.name}
