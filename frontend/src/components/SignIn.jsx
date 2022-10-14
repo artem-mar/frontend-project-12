@@ -59,7 +59,7 @@ const SignIn = () => {
           <div className="card">
             <div className="card-body row p-5">
               <div className="col-12 col-md-6 d-flex align-items-center justify-content-center">
-                <img src={signInImage} alt="Sign In" style={{ height: '250px' }} />
+                <img src={signInImage} alt={t('signIn.header')} style={{ height: '250px' }} />
               </div>
               <div className="col-12 col-md-6">
                 <Form noValidate onSubmit={formik.handleSubmit} className="mt-3">
