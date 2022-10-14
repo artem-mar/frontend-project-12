@@ -57,5 +57,10 @@ export default {
       networkError: 'Network error',
       unknownError: 'Unknown error',
     },
+    pageNotFound: {
+      notFound: 'Page not found',
+      go: 'Go to',
+      toHomePage: 'the home page',
+    },
   },
 };

@@ -57,5 +57,10 @@ export default {
       networkError: 'Ошибка соединения',
       unknownError: 'Неизвестная ошибка',
     },
+    pageNotFound: {
+      notFound: 'Страница не найдена',
+      go: 'Перейти',
+      toHomePage: 'на главную страницу',
+    },
   },
 };
