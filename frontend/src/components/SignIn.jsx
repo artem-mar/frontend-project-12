@@ -35,7 +35,7 @@ const SignIn = () => {
     validationSchema: schema,
     onSubmit: async (values) => {
       try {
-        const { data } = await axios.post(routes.loginPath(), values);
+        const { data } = await axios.post(routes.apiSigninPath(), values);
         localStorage.setItem('user', JSON.stringify(data));
         setAuthFailed(false);
         auth.logIn();
