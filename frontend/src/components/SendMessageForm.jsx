@@ -51,7 +51,7 @@ const SendMessageForm = ({ channelId }) => {
       <InputGroup>
         <Form.Control
           id="body"
-          autocomplete="off"
+          autoComplete="off"
           placeholder={t('chat.enterMessage')}
           aria-label={t('chat.newMessage')}
           ref={chatInput}
