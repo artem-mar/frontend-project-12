@@ -1,5 +1,4 @@
 import React, { useState, useMemo } from 'react';
-import { useDispatch } from 'react-redux';
 import {
   Routes, Route, BrowserRouter, Navigate, useLocation,
 } from 'react-router-dom';
@@ -10,8 +9,8 @@ import SignUp from './SignUp.jsx';
 import ChatPage from './ChatPage.jsx';
 import PageNotFound from './PageNotFound.jsx';
 import { AuthContext } from '../contexts/index.js';
-import { useAuth, useApi } from '../hooks/index.js';
-import { actions } from '../slices/index.js';
+import { useAuth } from '../hooks/index.js';
+import routes from '../routes.js';
 
 const AuthProvider = ({ children }) => {
   const hasToken = Object.hasOwn(localStorage, 'user');
@@ -42,36 +41,21 @@ const PrivateRoute = ({ children }) => {
   );
 };
 
-const App = () => {
-  const dispatch = useDispatch();
-  const socket = useApi();
-
-  socket.on('newMessage', (m) => {
-    dispatch(actions.addMessage(m));
-  });
-  socket.on('removeChannel', ({ id }) => {
-    dispatch(actions.removeChannel(id));
-  });
-  socket.on('renameChannel', (ch) => {
-    dispatch(actions.updateChannel({ id: ch.id, changes: { name: ch.name } }));
-  });
-
-  return (
-    <AuthProvider>
-      <div className="vh-100 d-flex flex-column">
-        <BrowserRouter>
-          <NavBar />
-          <Routes>
-            <Route path="/" element={<PrivateRoute><ChatPage /></PrivateRoute>} />
-            <Route path="/login" element={<SignIn />} />
-            <Route path="/signup" element={<SignUp />} />
-            <Route path="*" element={<PageNotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </div>
-      <ToastContainer />
-    </AuthProvider>
-  );
-};
+const App = () => (
+  <AuthProvider>
+    <div className="vh-100 d-flex flex-column">
+      <BrowserRouter>
+        <NavBar />
+        <Routes>
+          <Route path={routes.mainPath()} element={<PrivateRoute><ChatPage /></PrivateRoute>} />
+          <Route path={routes.signinPath()} element={<SignIn />} />
+          <Route path={routes.signupPath()} element={<SignUp />} />
+          <Route path="*" element={<PageNotFound />} />
+        </Routes>
+      </BrowserRouter>
+    </div>
+    <ToastContainer />
+  </AuthProvider>
+);
 
 export default App;

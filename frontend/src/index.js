@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { Provider as RollbarProvider } from '@rollbar/react';
+import { io } from 'socket.io-client';
 
 import init from './init.jsx';
 import store from './slices/index.js';
@@ -10,9 +11,14 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 const run = async () => {
   const root = ReactDOM.createRoot(document.getElementById('root'));
-  const app = await init();
+
+  console.log(process.env);
+
+  const socket = io();
+  const app = await init(socket);
+
   const rollbarConfig = {
-    accessToken: '77e0cb8a9a1b4548a60433cc0ee7ab62',
+    accessToken: process.env.REACT_APP_ROLLBAR_TOKEN,
     environment: 'production',
   };
   root.render(
