@@ -12,8 +12,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 const run = async () => {
   const root = ReactDOM.createRoot(document.getElementById('root'));
 
-  console.log(process.env);
-
   const socket = io();
   const app = await init(socket);
 
