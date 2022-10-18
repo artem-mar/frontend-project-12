@@ -107,7 +107,7 @@ const RemoveChannelModal = ({ handleClose }) => {
     }
     if (error) {
       toast.error(t(`toasts.${error.message}`));
-      rollbar('RemoveChannelModal/submit', error);
+      rollbar.error('RemoveChannelModal/submit', error);
     }
   };
 
@@ -165,7 +165,7 @@ const RenameChannelModal = ({ handleClose }) => {
       }
       if (error) {
         toast.error(t(`toasts.${error.message}`));
-        rollbar('RenameChannelModal/submit', error);
+        rollbar.error('RenameChannelModal/submit', error);
       }
     },
     validateOnBlur: false,
