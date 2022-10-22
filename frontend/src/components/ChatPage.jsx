@@ -2,9 +2,11 @@ import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useRollbar } from '@rollbar/react';
+import axios from 'axios';
+import routes from '../routes.js';
+import { actions } from '../slices/index.js';
 import Channels from './Channels.jsx';
 import Chat from './Chat.jsx';
-import { thunks } from '../slices/index.js';
 import { useAuth } from '../hooks/index.js';
 import Modal from './Modal.jsx';
 
@@ -14,8 +16,15 @@ const ChatPage = () => {
 
   useEffect(() => {
     const fetch = async () => {
-      const { error } = await dispatch(thunks.fetchData());
-      if (error) rollbar.error('ChatPage/fetchData', error);
+      const { token } = JSON.parse(localStorage.getItem('user'));
+      const headers = { Authorization: `Bearer ${token}` };
+      try {
+        const { data: { channels, messages } } = await axios.get(routes.apiDataPath(), { headers });
+        dispatch(actions.addChannels(channels));
+        dispatch(actions.addMessages(messages));
+      } catch (error) {
+        rollbar.error('ChatPage/fetchData', error);
+      }
     };
     fetch();
   }, [dispatch, rollbar]);

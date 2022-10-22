@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import filter from 'leo-profanity';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import { actions, thunks } from '../slices/index.js';
+import { actions } from '../slices/index.js';
 import { selectors } from '../slices/channelsSlice.js';
 import { useApi } from '../hooks/index.js';
 
@@ -23,7 +23,6 @@ const AddChannelModal = ({ handleClose }) => {
   const rollbar = useRollbar();
   const { t } = useTranslation();
   const api = useApi();
-  const dispatch = useDispatch();
   const channelsNames = useSelector(selectors.selectAll).map((ch) => ch.name);
 
   const formik = useFormik({
@@ -32,18 +31,11 @@ const AddChannelModal = ({ handleClose }) => {
     },
     validationSchema: getSchema(channelsNames),
     onSubmit: async ({ name }) => {
-      const typeName = 'newChannel';
-      const channel = {
-        typeName,
-        name: filter.clean(name),
-        api,
-      };
-      const { meta, error } = await dispatch(thunks.addChannel(channel));
-      if (meta.requestStatus === 'fulfilled') {
+      try {
+        await api.createChannel({ name: filter.clean(name) });
         handleClose();
         toast.success(t('toasts.added'));
-      }
-      if (error) {
+      } catch (error) {
         toast.error(t(`toasts.${error.message}`));
         rollbar.error('AddChannelModal/submit', error);
       }
@@ -93,19 +85,17 @@ const RemoveChannelModal = ({ handleClose }) => {
   const rollbar = useRollbar();
   const { t } = useTranslation();
   const api = useApi();
-  const dispatch = useDispatch();
   const id = useSelector((state) => state.modal.id);
   const [submitting, setSubmitting] = useState(false);
 
   const handleRemove = async () => {
     setSubmitting(true);
-    const typeName = 'removeChannel';
-    const { meta, error } = await dispatch(thunks.removeChannel({ typeName, id, api }));
-    if (meta.requestStatus === 'fulfilled') {
+    try {
+      await api.removeChannel({ id });
       handleClose();
       toast.success(t('toasts.removed'));
-    }
-    if (error) {
+    } catch (error) {
+      setSubmitting(false);
       toast.error(t(`toasts.${error.message}`));
       rollbar.error('RemoveChannelModal/submit', error);
     }
@@ -134,7 +124,6 @@ const RenameChannelModal = ({ handleClose }) => {
   const rollbar = useRollbar();
   const { t } = useTranslation();
   const api = useApi();
-  const dispatch = useDispatch();
   const inputRef = useRef();
 
   useEffect(() => {
@@ -151,19 +140,11 @@ const RenameChannelModal = ({ handleClose }) => {
     },
     validationSchema: getSchema(channelsNames),
     onSubmit: async ({ name }) => {
-      const typeName = 'renameChannel';
-      const channel = {
-        name: filter.clean(name),
-        typeName,
-        id,
-        api,
-      };
-      const { meta, error } = await dispatch(thunks.renameChannel(channel));
-      if (meta.requestStatus === 'fulfilled') {
+      try {
+        await api.renameChannel({ name: filter.clean(name), id });
         handleClose();
         toast.success(t('toasts.renamed'));
-      }
-      if (error) {
+      } catch (error) {
         toast.error(t(`toasts.${error.message}`));
         rollbar.error('RenameChannelModal/submit', error);
       }

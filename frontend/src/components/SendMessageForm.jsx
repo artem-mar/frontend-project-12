@@ -1,20 +1,18 @@
 import React, { useRef, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
 import { useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { SendFill, SendXFill } from 'react-bootstrap-icons';
+import { toast } from 'react-toastify';
 import { useRollbar } from '@rollbar/react';
 import filter from 'leo-profanity';
 import * as yup from 'yup';
 import { Form, InputGroup, Button } from 'react-bootstrap';
-import { thunks } from '../slices/index.js';
 import { useApi, useAuth } from '../hooks/index.js';
 
 const SendMessageForm = ({ channelId }) => {
   const rollbar = useRollbar();
   const { t } = useTranslation();
   const chatInput = useRef(null);
-  const dispatch = useDispatch();
   const api = useApi();
   const { user: { username } } = useAuth();
 
@@ -31,16 +29,12 @@ const SendMessageForm = ({ channelId }) => {
     }),
     onSubmit: async ({ body }) => {
       const clean = filter.clean(body);
-      const typeName = 'newMessage';
-
-      const { meta, error } = await dispatch(thunks.sendMessage({
-        body: clean, username, channelId, api, typeName,
-      }));
-      if (meta.requestStatus === 'fulfilled') {
+      try {
+        await api.sendMessage({ body: clean, username, channelId });
         formik.resetForm();
-      }
-      if (error) {
-        rollbar('SendMessageForm/submit', error);
+      } catch (error) {
+        rollbar.error('SendMessageForm/submit', error);
+        toast.error(t(`toasts.${error.message}`));
       }
     },
     validateOnBlur: false,
