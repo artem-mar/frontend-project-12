@@ -22,4 +22,4 @@ make start
 - Sending and receiving messages in real time
 - Filter for profanity
 
-### You can check this application [here](http://reactapp-chat.herokuapp.com/)
+### You can check this application [here](https://frontend-project-12-production-c127.up.railway.app/)
